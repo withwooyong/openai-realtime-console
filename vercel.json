@@ -1,5 +1,16 @@
 {
   "buildCommand": "npm run build:client",
   "outputDirectory": "dist/client",
-  "installCommand": "npm install"
+  "installCommand": "npm install",
+  "functions": {
+    "api/token.js": {
+      "runtime": "@vercel/node@20"
+    },
+    "api/test.js": {
+      "runtime": "@vercel/node@20"
+    },
+    "api/hello.js": {
+      "runtime": "@vercel/node@20"
+    }
+  }
 }
