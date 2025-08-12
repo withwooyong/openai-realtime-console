@@ -7,4 +7,7 @@ const path = fileURLToPath(import.meta.url);
 export default {
   root: join(dirname(path), "client"),
   plugins: [react()],
+  build: {
+    outDir: "../dist/client", // 명시적으로 outDir 설정
+  },
 };
