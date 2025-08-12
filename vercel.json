@@ -1,5 +1,12 @@
 {
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
-  "installCommand": "npm install"
+  "installCommand": "npm install",
+  "framework": "node",
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/dist/server/entry-server.js"
+    }
+  ]
 }
