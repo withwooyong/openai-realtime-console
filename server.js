@@ -15,7 +15,7 @@ const vite = await createViteServer({
 app.use(vite.middlewares);
 
 // API route for token generation
-app.get("/token", async (req, res) => {
+const tokenHandler = async (req, res) => {
   try {
     const response = await fetch(
       "https://api.openai.com/v1/realtime/sessions",
@@ -38,7 +38,10 @@ app.get("/token", async (req, res) => {
     console.error("Token generation error:", error);
     res.status(500).json({ error: "Failed to generate token" });
   }
-});
+};
+
+app.get("/token", tokenHandler);
+app.get("/api/token", tokenHandler);
 
 // Render the React client
 app.use("*", async (req, res, next) => {
