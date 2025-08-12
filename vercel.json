@@ -4,13 +4,13 @@
   "installCommand": "npm install",
   "functions": {
     "api/token.js": {
-      "runtime": "@vercel/node@20"
+      "runtime": "nodejs20.x"
     },
     "api/test.js": {
-      "runtime": "@vercel/node@20"
+      "runtime": "nodejs20.x"
     },
     "api/hello.js": {
-      "runtime": "@vercel/node@20"
+      "runtime": "nodejs20.x"
     }
   }
 }
