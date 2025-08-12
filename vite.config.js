@@ -8,6 +8,6 @@ export default {
   root: join(dirname(path), "client"),
   plugins: [react()],
   build: {
-    outDir: "../dist/client", // 명시적으로 outDir 설정
+    outDir: "../../dist/client", // 프로젝트 루트의 dist/client로 수정
   },
 };
