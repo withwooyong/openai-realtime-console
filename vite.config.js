@@ -9,5 +9,6 @@ export default {
   plugins: [react()],
   build: {
     outDir: join(dirname(path), "dist", "client"), // 절대 경로 사용
+    emptyOutDir: true, // 출력 디렉토리 비우기 허용
   },
 };
