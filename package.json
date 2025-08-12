@@ -4,7 +4,7 @@
     "dev": "node server.js --dev",
     "start": "node server.js",
     "build": "npm run build:client",
-    "build:client": "vite build --outDir client",
+    "build:client": "vite build --outDir ../dist/client",
     "build:server": "echo 'Server build skipped for Vercel'",
     "devinstall": "zx ../../devinstall.mjs -- node server.js --dev",
     "lint": "eslint . --ext .js,.jsx --fix",
