@@ -1,16 +1,5 @@
 {
   "buildCommand": "npm run build:client",
   "outputDirectory": "dist/client",
-  "installCommand": "npm install",
-  "functions": {
-    "api/token.js": {
-      "runtime": "nodejs20.x"
-    },
-    "api/test.js": {
-      "runtime": "nodejs20.x"
-    },
-    "api/hello.js": {
-      "runtime": "nodejs20.x"
-    }
-  }
+  "installCommand": "npm install"
 }
