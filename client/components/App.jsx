@@ -11,6 +11,7 @@ export default function App() {
   const [consoleSessionActive, setConsoleSessionActive] = useState(false);
   const [consoleEvents, setConsoleEvents] = useState([]);
   const [consoleDataChannel, setConsoleDataChannel] = useState(null);
+  const [consoleVoice, setConsoleVoice] = useState("verse");
   const consolePeerConnection = useRef(null);
   const consoleAudioElement = useRef(null);
 
@@ -64,9 +65,12 @@ export default function App() {
   }, []);
 
   // Console 세션 시작
-  async function startConsoleSession() {
+  async function startConsoleSession(selectedVoice = "verse") {
     try {
-      console.log("🚀 [DEBUG] Starting Console session...");
+      console.log(
+        "🚀 [DEBUG] Starting Console session with voice:",
+        selectedVoice,
+      );
       // 새 세션 시작 시 이벤트 초기화
       setConsoleEvents([]);
       const tokenUrl = "https://ai.yanadoo.co.kr/realtime/sessions";
@@ -79,7 +83,7 @@ export default function App() {
           model: "gpt-4o-realtime-preview-2025-06-03",
           modalities: ["audio", "text"],
           instructions: "You are a friendly assistant.",
-          voice: "verse",
+          voice: selectedVoice,
           input_audio_transcription: {
             model: "whisper-1", // 또는 "gpt-4o-transcribe", "gpt-4o-mini-transcribe"
           },
@@ -144,9 +148,12 @@ export default function App() {
   }
 
   // Conversation 세션 시작
-  async function startConversationSession() {
+  async function startConversationSession(selectedVoice = "verse") {
     try {
-      console.log("🚀 [DEBUG] Starting Conversation session...");
+      console.log(
+        "🚀 [DEBUG] Starting Conversation session with voice:",
+        selectedVoice,
+      );
       // 새 세션 시작 시 이벤트 초기화
       setConversationEvents([]);
       const tokenUrl = "https://ai.yanadoo.co.kr/realtime/sessions";
@@ -159,7 +166,7 @@ export default function App() {
           model: "gpt-4o-realtime-preview-2025-06-03",
           modalities: ["audio", "text"],
           instructions: "You are a friendly assistant.",
-          voice: "verse",
+          voice: selectedVoice,
           input_audio_transcription: {
             model: "whisper-1", // 또는 "gpt-4o-transcribe", "gpt-4o-mini-transcribe"
           },
@@ -513,11 +520,45 @@ export default function App() {
           <>
             <section className="absolute top-0 left-0 right-0 md:right-[380px] bottom-0 flex">
               <section className="absolute top-0 left-0 right-0 bottom-32 px-4 overflow-y-auto">
+                <div className="flex items-center justify-between py-2 mb-2 border-b border-gray-200 bg-white sticky top-0 z-10">
+                  <div className="text-gray-500">
+                    {!consoleSessionActive && consoleEvents.length === 0
+                      ? "Awaiting events..."
+                      : consoleSessionActive
+                      ? `Session active - ${consoleEvents.length} events`
+                      : `${consoleEvents.length} events`}
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <label className="text-xs text-gray-500 font-medium">
+                      Voice:
+                    </label>
+                    <select
+                      value={consoleVoice}
+                      onChange={(e) => setConsoleVoice(e.target.value)}
+                      disabled={consoleSessionActive}
+                      className={`text-xs border rounded px-2 py-1 min-w-[80px] ${
+                        consoleSessionActive
+                          ? "bg-gray-100 text-gray-500 cursor-not-allowed"
+                          : "bg-white text-gray-800 border-gray-300 hover:border-gray-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                      }`}
+                    >
+                      <option value="alloy">Alloy</option>
+                      <option value="ash">Ash</option>
+                      <option value="ballad">Ballad</option>
+                      <option value="coral">Coral</option>
+                      <option value="echo">Echo</option>
+                      <option value="sage">Sage</option>
+                      <option value="shimmer">Shimmer</option>
+                      <option value="verse">Verse</option>
+                    </select>
+                  </div>
+                </div>
+
                 <EventLog events={consoleEvents} />
               </section>
               <section className="absolute h-32 left-0 right-0 bottom-0 p-4">
                 <SessionControls
-                  startSession={startConsoleSession}
+                  startSession={() => startConsoleSession(consoleVoice)}
                   stopSession={stopConsoleSession}
                   sendClientEvent={sendConsoleClientEvent}
                   sendTextMessage={sendConsoleTextMessage}

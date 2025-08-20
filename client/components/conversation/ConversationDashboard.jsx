@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import AudioBufferPanel from "./AudioBufferPanel";
 import ConversationPanel from "./ConversationPanel";
 import ResponsePanel from "./ResponsePanel";
@@ -13,6 +13,13 @@ export default function ConversationDashboard({
   sendClientEvent,
   sendTextMessage,
 }) {
+  const [selectedVoice, setSelectedVoice] = useState("verse");
+
+  // voice 변경 핸들러
+  const handleVoiceChange = (voice) => {
+    setSelectedVoice(voice);
+    console.log("🎵 [DEBUG] Voice changed to:", voice);
+  };
   // ConversationDashboard 상태 변화 추적
   useEffect(() => {
     console.log("🎯 [DEBUG] ConversationDashboard: Props updated", {
@@ -49,18 +56,51 @@ export default function ConversationDashboard({
     <div className="h-full w-full bg-gray-50 rounded-lg flex flex-col">
       {/* 헤더 */}
       <div className="bg-white border-b border-gray-200 px-4 md:px-6 py-3 md:py-4 flex-shrink-0">
-        <h2 className="text-lg md:text-xl font-semibold text-gray-800">
-          Session
-        </h2>
-        <div className="flex items-center gap-2 mt-1">
-          <div
-            className={`w-2 h-2 rounded-full ${
-              isSessionActive ? "bg-green-500" : "bg-gray-400"
-            }`}
-          ></div>
-          <span className="text-sm text-gray-600">
-            {isSessionActive ? "Active" : "Inactive"}
-          </span>
+        <div className="flex items-start justify-between">
+          <div>
+            <h2 className="text-lg md:text-xl font-semibold text-gray-800">
+              Session
+            </h2>
+            <div className="flex items-center gap-2 mt-1">
+              <div
+                className={`w-2 h-2 rounded-full ${
+                  isSessionActive ? "bg-green-500" : "bg-gray-400"
+                }`}
+              ></div>
+              <span className="text-sm text-gray-600">
+                {isSessionActive ? "Active" : "Inactive"}
+              </span>
+            </div>
+          </div>
+
+          {/* Voice 선택 */}
+          <div className="flex flex-col items-end gap-1">
+            <label className="text-xs text-gray-500 font-medium">Voice</label>
+            <select
+              value={selectedVoice}
+              onChange={(e) => handleVoiceChange(e.target.value)}
+              disabled={isSessionActive}
+              className={`text-sm border rounded-md px-2 py-1 min-w-[100px] ${
+                isSessionActive
+                  ? "bg-gray-100 text-gray-500 cursor-not-allowed"
+                  : "bg-white text-gray-800 border-gray-300 hover:border-gray-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+              }`}
+            >
+              <option value="alloy">Alloy</option>
+              <option value="ash">Ash</option>
+              <option value="ballad">Ballad</option>
+              <option value="coral">Coral</option>
+              <option value="echo">Echo</option>
+              <option value="sage">Sage</option>
+              <option value="shimmer">Shimmer</option>
+              <option value="verse">Verse</option>
+            </select>
+            {isSessionActive && (
+              <span className="text-xs text-gray-400">
+                Voice locked during session
+              </span>
+            )}
+          </div>
         </div>
       </div>
 
@@ -96,7 +136,7 @@ export default function ConversationDashboard({
       <div className="border-t border-gray-200 bg-white p-4 md:p-6 flex-shrink-0">
         <div className="max-w-4xl mx-auto">
           <SessionControls
-            startSession={startSession}
+            startSession={() => startSession(selectedVoice)}
             stopSession={stopSession}
             sendClientEvent={sendClientEvent}
             sendTextMessage={sendTextMessage}

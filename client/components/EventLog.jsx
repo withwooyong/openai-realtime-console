@@ -53,12 +53,6 @@ export default function EventLog({ events }) {
   });
 
   return (
-    <div className="flex flex-col gap-2 overflow-x-auto">
-      {events.length === 0 ? (
-        <div className="text-gray-500">Awaiting events...</div>
-      ) : (
-        eventsToDisplay
-      )}
-    </div>
+    <div className="flex flex-col gap-2 overflow-x-auto">{eventsToDisplay}</div>
   );
 }
