@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Web Speech API 테스트</title>
+    <style>
+      body {
+        font-family: "Arial", sans-serif;
+        max-width: 800px;
+        margin: 50px auto;
+        padding: 20px;
+        background-color: #f5f5f5;
+      }
+      .container {
+        background: white;
+        padding: 30px;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      }
+      .test-section {
+        margin: 20px 0;
+        padding: 20px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+      }
+      button {
+        padding: 12px 24px;
+        margin: 5px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 16px;
+        background-color: #6c757d;
+        color: white;
+        transition: all 0.2s ease;
+      }
+      button:hover {
+        background-color: #495057;
+        transform: translateY(-1px);
+      }
+      button:active {
+        transform: translateY(0px);
+      }
+      .control-btn-group {
+        display: flex;
+        gap: 4px;
+        margin: 15px 0;
+        justify-content: flex-start;
+      }
+      .start-btn {
+        background-color: #4caf50;
+        color: white;
+        min-width: 70px;
+        max-width: 80px;
+        font-size: 13px;
+        padding: 8px 12px;
+        white-space: nowrap;
+        transition: all 0.2s ease;
+      }
+      .start-btn:hover {
+        background-color: #45a049 !important;
+        transform: translateY(-1px);
+      }
+      .start-btn:active {
+        transform: translateY(0px);
+        box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
+      }
+      .stop-btn {
+        background-color: #f44336;
+        color: white;
+        min-width: 70px;
+        max-width: 80px;
+        font-size: 13px;
+        padding: 8px 12px;
+        white-space: nowrap;
+        transition: all 0.2s ease;
+      }
+      .stop-btn:hover {
+        background-color: #da190b !important;
+        transform: translateY(-1px);
+      }
+      .stop-btn:active {
+        transform: translateY(0px);
+        box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
+      }
+      .lang-btn-group {
+        display: flex;
+        flex-wrap: nowrap;
+        gap: 4px;
+        margin: 15px 0;
+        padding: 8px;
+        background-color: #f8f9fa;
+        border-radius: 8px;
+        border: 1px solid #e9ecef;
+        overflow-x: auto; /* 모바일에서 스크롤 가능 */
+      }
+      .lang-btn {
+        background-color: #6c757d;
+        color: white;
+        border: 2px solid transparent;
+        transition: all 0.2s ease;
+        min-width: 70px;
+        max-width: 80px;
+        font-size: 13px;
+        padding: 8px 12px;
+        white-space: nowrap;
+        flex-shrink: 0; /* 버튼 크기 고정 */
+      }
+      .lang-btn:hover {
+        background-color: #495057;
+        transform: translateY(-1px);
+      }
+      .lang-btn.active {
+        background-color: #28a745;
+        border-color: #20c997;
+        box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25);
+      }
+      .result {
+        margin: 15px 0;
+        padding: 15px;
+        background-color: #f8f9fa;
+        border-radius: 5px;
+        min-height: 50px;
+      }
+      .interim {
+        color: #666;
+        font-style: italic;
+      }
+      .final {
+        color: #333;
+        font-weight: bold;
+      }
+      .status {
+        padding: 10px;
+        margin: 10px 0;
+        border-radius: 5px;
+      }
+      .status.listening {
+        background-color: #d4edda;
+        color: #155724;
+      }
+      .status.stopped {
+        background-color: #f8d7da;
+        color: #721c24;
+      }
+      .language-info {
+        background-color: #e7f3ff;
+        padding: 10px;
+        border-radius: 5px;
+        margin: 10px 0;
+      }
+      .quality-metrics {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 10px;
+        margin: 15px 0;
+      }
+      .metric {
+        background-color: #f1f3f4;
+        padding: 10px;
+        border-radius: 5px;
+        text-align: center;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>🎤 Web Speech API 품질 테스트</h1>
+
+      <!-- 브라우저 지원 확인 -->
+      <div class="test-section">
+        <h2>🔍 브라우저 지원 현황</h2>
+        <div id="browser-support"></div>
+      </div>
+
+      <!-- 언어 선택 -->
+      <div class="test-section">
+        <h2>🌍 언어 선택</h2>
+        <div class="lang-btn-group">
+          <button
+            class="lang-btn active"
+            onclick="setLanguage('auto')"
+            id="btn-auto"
+          >
+            🔍 자동
+          </button>
+          <button
+            class="lang-btn"
+            onclick="setLanguage('ko-KR')"
+            id="btn-ko-KR"
+          >
+            🇰🇷 한국어
+          </button>
+          <button
+            class="lang-btn"
+            onclick="setLanguage('en-US')"
+            id="btn-en-US"
+          >
+            🇺🇸 영어
+          </button>
+          <button
+            class="lang-btn"
+            onclick="setLanguage('ja-JP')"
+            id="btn-ja-JP"
+          >
+            🇯🇵 일본어
+          </button>
+          <button
+            class="lang-btn"
+            onclick="setLanguage('zh-CN')"
+            id="btn-zh-CN"
+          >
+            🇨🇳 중국어
+          </button>
+        </div>
+        <div class="language-info" id="current-language">
+          현재 언어: <span id="lang-display">auto</span>
+        </div>
+      </div>
+
+      <!-- 음성 인식 테스트 -->
+      <div class="test-section">
+        <h2>🎯 음성 인식 테스트</h2>
+        <div class="control-btn-group">
+          <button class="start-btn" onclick="startRecognition()">
+            🎤 시작
+          </button>
+          <button class="stop-btn" onclick="stopRecognition()">⏹️ 정지</button>
+        </div>
+
+        <div class="status" id="status">준비됨</div>
+
+        <div class="result">
+          <div id="interim-result" class="interim"></div>
+          <div id="final-result" class="final"></div>
+        </div>
+      </div>
+
+      <!-- 품질 메트릭 -->
+      <div class="test-section">
+        <h2>📊 품질 메트릭</h2>
+        <div class="quality-metrics">
+          <div class="metric">
+            <div>인식 속도</div>
+            <div id="speed">-</div>
+          </div>
+          <div class="metric">
+            <div>신뢰도</div>
+            <div id="confidence">-</div>
+          </div>
+          <div class="metric">
+            <div>품질 점수</div>
+            <div id="quality-score">-</div>
+          </div>
+          <div class="metric">
+            <div>언어 감지</div>
+            <div id="detected-lang">-</div>
+          </div>
+          <div class="metric">
+            <div>세션 시간</div>
+            <div id="total-time">-</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 테스트 로그 -->
+      <div class="test-section">
+        <h2>📝 테스트 로그</h2>
+        <div
+          id="test-log"
+          style="
+            max-height: 300px;
+            overflow-y: auto;
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 5px;
+          "
+        ></div>
+        <button onclick="clearLog()">로그 지우기</button>
+      </div>
+    </div>
+
+    <script>
+      let recognition = null;
+      let currentLanguage = "auto";
+      let startTime = null;
+      let totalRecognitionTime = 0;
+      let sessionStartTime = null;
+
+      // 브라우저 지원 확인
+      function checkBrowserSupport() {
+        const supportDiv = document.getElementById("browser-support");
+
+        if (
+          "webkitSpeechRecognition" in window ||
+          "SpeechRecognition" in window
+        ) {
+          const SpeechRecognition =
+            window.SpeechRecognition || window.webkitSpeechRecognition;
+          supportDiv.innerHTML = `
+                    <div style="color: green;">✅ Web Speech API 지원됨</div>
+                    <div>사용 가능한 API: ${
+                      window.SpeechRecognition
+                        ? "SpeechRecognition"
+                        : "webkitSpeechRecognition"
+                    }</div>
+                    <div>User Agent: ${navigator.userAgent}</div>
+                `;
+          return true;
+        } else {
+          supportDiv.innerHTML = `
+                    <div style="color: red;">❌ Web Speech API 미지원</div>
+                    <div>이 브라우저는 음성 인식을 지원하지 않습니다.</div>
+                `;
+          return false;
+        }
+      }
+
+      // 언어 설정
+      function setLanguage(lang) {
+        currentLanguage = lang;
+        document.getElementById("lang-display").textContent = lang;
+        log(`언어 변경: ${lang}`);
+
+        // 버튼 활성화 상태 업데이트
+        document.querySelectorAll(".lang-btn").forEach((btn) => {
+          btn.classList.remove("active");
+        });
+        document.getElementById(`btn-${lang}`).classList.add("active");
+      }
+
+      // 음성 인식 시작
+      function startRecognition() {
+        console.log("🚀 [DEBUG] startRecognition 함수 호출됨");
+
+        if (!checkBrowserSupport()) {
+          console.error("❌ [ERROR] 브라우저 지원 확인 실패");
+          alert("이 브라우저는 음성 인식을 지원하지 않습니다.");
+          return;
+        }
+
+        console.log("✅ [DEBUG] 브라우저 지원 확인됨");
+
+        const SpeechRecognition =
+          window.SpeechRecognition || window.webkitSpeechRecognition;
+        recognition = new SpeechRecognition();
+
+        // 향상된 설정
+        recognition.continuous = true;
+        recognition.interimResults = true;
+        recognition.maxAlternatives = 5; // 더 많은 대안 제공
+
+        // 언어별 최적화 설정
+        if (currentLanguage !== "auto") {
+          recognition.lang = currentLanguage;
+        } else {
+          // 자동감지 모드에서는 한국어 우선 설정 (한국 사용자 기준)
+          recognition.lang = "ko-KR";
+        }
+
+        // 추가 품질 향상 설정 (브라우저별 지원)
+        if (recognition.serviceURI) {
+          // Google 음성 서비스 사용 시 품질 향상
+          recognition.serviceURI =
+            "wss://www.google.com/speech-api/v2/recognize";
+        }
+
+        // 소음 제거 설정 (지원하는 브라우저에서)
+        try {
+          if (typeof recognition.grammars !== "undefined") {
+            // 빈 SpeechGrammarList 생성 (문법 제약 해제)
+            const SpeechGrammarList =
+              window.SpeechGrammarList || window.webkitSpeechGrammarList;
+            if (SpeechGrammarList) {
+              recognition.grammars = new SpeechGrammarList();
+              console.log("✅ [DEBUG] 빈 Grammar List 설정 완료");
+            }
+          }
+        } catch (error) {
+          console.log("⚠️ [DEBUG] Grammar 설정 스킵:", error.message);
+        }
+
+        startTime = Date.now();
+        if (!sessionStartTime) {
+          sessionStartTime = Date.now();
+        }
+
+        // 이벤트 핸들러
+        recognition.onstart = () => {
+          document.getElementById("status").className = "status listening";
+          document.getElementById("status").textContent = "🎤 듣고 있습니다...";
+          log("음성 인식 시작됨");
+        };
+
+        recognition.onresult = (event) => {
+          let interimTranscript = "";
+          let finalTranscript = "";
+
+          for (let i = event.resultIndex; i < event.results.length; i++) {
+            const result = event.results[i];
+            const transcript = result[0].transcript;
+            const confidence = result[0].confidence;
+
+            if (result.isFinal) {
+              finalTranscript += transcript + " ";
+
+              // 품질 메트릭 업데이트
+              const elapsed = Date.now() - startTime;
+              document.getElementById("speed").textContent = `${Math.round(
+                elapsed,
+              )}ms`;
+              document.getElementById("confidence").textContent = confidence
+                ? `${Math.round(confidence * 100)}%`
+                : "정보 없음";
+
+              // 품질 점수 계산 (속도 + 신뢰도 + 텍스트 길이 고려)
+              const qualityScore = calculateQualityScore(
+                elapsed,
+                confidence,
+                transcript.length,
+              );
+              document.getElementById(
+                "quality-score",
+              ).textContent = `${qualityScore}/100`;
+
+              // 언어 감지 개선
+              let detectedLang = "정보 없음";
+
+              if (currentLanguage === "auto") {
+                // 자동감지 모드인 경우 텍스트 분석으로 언어 추정
+                detectedLang = detectLanguageFromText(transcript);
+              } else if (recognition.lang) {
+                detectedLang = recognition.lang;
+              }
+
+              document.getElementById("detected-lang").textContent =
+                detectedLang;
+
+              log(
+                `최종 결과: "${transcript}" (신뢰도: ${
+                  confidence ? Math.round(confidence * 100) : "?"
+                }%)`,
+              );
+            } else {
+              interimTranscript += transcript;
+            }
+          }
+
+          document.getElementById("interim-result").textContent =
+            interimTranscript;
+          document.getElementById("final-result").textContent +=
+            finalTranscript;
+        };
+
+        recognition.onerror = (event) => {
+          log(
+            `오류 발생: ${event.error} - ${event.message || "상세 정보 없음"}`,
+          );
+          document.getElementById("status").className = "status stopped";
+          document.getElementById(
+            "status",
+          ).textContent = `❌ 오류: ${event.error}`;
+        };
+
+        recognition.onend = () => {
+          if (startTime) {
+            totalRecognitionTime += Date.now() - startTime;
+          }
+
+          // 총 세션 시간 업데이트
+          if (sessionStartTime) {
+            const totalSessionTime = Date.now() - sessionStartTime;
+            document.getElementById(
+              "total-time",
+            ).textContent = `세션: ${Math.round(
+              totalSessionTime / 1000,
+            )}초 | 인식: ${Math.round(totalRecognitionTime / 1000)}초`;
+          }
+
+          document.getElementById("status").className = "status stopped";
+          document.getElementById("status").textContent = "⏹️ 정지됨";
+          log("음성 인식 종료됨");
+        };
+
+        recognition.start();
+      }
+
+      // 음성 인식 정지
+      function stopRecognition() {
+        console.log("⏹️ [DEBUG] stopRecognition 함수 호출됨");
+
+        if (recognition) {
+          console.log("✅ [DEBUG] 인식 객체 존재, 정지 중...");
+          recognition.stop();
+          recognition = null;
+          console.log("✅ [DEBUG] 인식 정지 완료");
+        } else {
+          console.log("⚠️ [DEBUG] 인식 객체가 없음");
+        }
+      }
+
+      // 로그 기능
+      function log(message) {
+        const timestamp = new Date().toLocaleTimeString();
+        const logDiv = document.getElementById("test-log");
+        logDiv.innerHTML += `<div>[${timestamp}] ${message}</div>`;
+        logDiv.scrollTop = logDiv.scrollHeight;
+      }
+
+      // 향상된 텍스트 기반 언어 감지
+      function detectLanguageFromText(text) {
+        if (!text || text.trim().length < 2) return "정보 없음";
+
+        const cleanText = text.trim().toLowerCase();
+        let scores = {
+          korean: 0,
+          japanese: 0,
+          chinese: 0,
+          english: 0,
+        };
+
+        // 한국어 감지 (개선된 패턴)
+        const koreanPatterns = [
+          /[가-힣]/g, // 완성된 한글
+          /[ㄱ-ㅎㅏ-ㅣ]/g, // 자음, 모음
+          /\s+(은|는|이|가|을|를|에|에서|와|과|의|도|만|부터|까지|에게|한테)\s+/g, // 조사
+          /(입니다|습니다|해요|어요|이에요|예요)$/g, // 어미
+          /(안녕|감사|죄송|미안|사랑)/g, // 한국어 특징 단어
+        ];
+
+        koreanPatterns.forEach((pattern) => {
+          const matches = cleanText.match(pattern);
+          if (matches) scores.korean += matches.length * 2;
+        });
+
+        // 일본어 감지 (개선된 패턴)
+        const japanesePatterns = [
+          /[ひらがな]/g, // 히라가나
+          /[カタカナ]/g, // 카타카나
+          /[一-龯]/g, // 한자 (일본어용)
+          /(です|ます|した|って|という|ある|する|いる|なる)/g, // 일본어 특징 표현
+          /(こんにち|ありがと|すみません|はじめまして)/g, // 일본어 인사말
+        ];
+
+        japanesePatterns.forEach((pattern) => {
+          const matches = cleanText.match(pattern);
+          if (matches) scores.japanese += matches.length * 2;
+        });
+
+        // 중국어 감지 (개선된 패턴)
+        const chinesePatterns = [
+          /[\u4e00-\u9fff]/g, // 중국어 한자
+          /(你好|谢谢|对不起|再见|请问|没关系|不客气)/g, // 중국어 인사말
+          /(的|了|是|在|有|和|也|都|会|要|可以)/g, // 중국어 특징 단어
+          /(什么|怎么|哪里|为什么|多少)/g, // 의문사
+        ];
+
+        chinesePatterns.forEach((pattern) => {
+          const matches = cleanText.match(pattern);
+          if (matches) scores.chinese += matches.length * 2;
+        });
+
+        // 영어 감지 (개선된 패턴)
+        const englishPatterns = [
+          /\b[a-z]+\b/g, // 영문 단어
+          /\b(the|is|are|and|or|but|in|on|at|to|for|of|with|by)\b/g, // 관사/전치사
+          /\b(hello|thank|sorry|please|welcome|good|nice|how|what|where|when|why)\b/g, // 영어 인사말/의문사
+          /\b(going|doing|being|having|getting|making|taking|coming)\b/g, // 진행형/동명사
+        ];
+
+        englishPatterns.forEach((pattern) => {
+          const matches = cleanText.match(pattern);
+          if (matches) scores.english += matches.length;
+        });
+
+        // 점수 기반 언어 판정
+        const maxScore = Math.max(...Object.values(scores));
+        if (maxScore === 0) return "정보 없음";
+
+        // 신뢰도 계산 (최고점수 / 총점수)
+        const totalScore = Object.values(scores).reduce((a, b) => a + b, 0);
+        const confidence = Math.round((maxScore / totalScore) * 100);
+
+        // 가장 높은 점수의 언어 반환
+        for (const [lang, score] of Object.entries(scores)) {
+          if (score === maxScore) {
+            const langCodes = {
+              korean: `ko-KR (${confidence}%)`,
+              japanese: `ja-JP (${confidence}%)`,
+              chinese: `zh-CN (${confidence}%)`,
+              english: `en-US (${confidence}%)`,
+            };
+
+            log(
+              `언어 점수: 한국어=${scores.korean}, 일본어=${scores.japanese}, 중국어=${scores.chinese}, 영어=${scores.english}`,
+            );
+            return langCodes[lang];
+          }
+        }
+
+        return "정보 없음";
+      }
+
+      // 품질 점수 계산 함수
+      function calculateQualityScore(responseTime, confidence, textLength) {
+        let score = 100;
+
+        // 응답 시간 평가 (빠를수록 좋음)
+        if (responseTime > 2000) score -= 30;
+        else if (responseTime > 1000) score -= 15;
+        else if (responseTime > 500) score -= 5;
+
+        // 신뢰도 평가
+        if (confidence) {
+          if (confidence < 0.5) score -= 40;
+          else if (confidence < 0.7) score -= 20;
+          else if (confidence < 0.9) score -= 5;
+        } else {
+          score -= 20; // 신뢰도 정보 없음
+        }
+
+        // 텍스트 길이 평가 (너무 짧으면 인식 품질 의심)
+        if (textLength < 3) score -= 20;
+        else if (textLength < 6) score -= 10;
+
+        return Math.max(0, Math.round(score));
+      }
+
+      function clearLog() {
+        document.getElementById("test-log").innerHTML = "";
+        document.getElementById("interim-result").textContent = "";
+        document.getElementById("final-result").textContent = "";
+        totalRecognitionTime = 0;
+        sessionStartTime = null;
+        document.getElementById("total-time").textContent = "-";
+        document.getElementById("speed").textContent = "-";
+        document.getElementById("confidence").textContent = "-";
+        document.getElementById("detected-lang").textContent = "-";
+        document.getElementById("quality-score").textContent = "-";
+      }
+
+      // 페이지 로드 시 브라우저 지원 확인
+      window.onload = function () {
+        checkBrowserSupport();
+        log("페이지 로드 완료 - Web Speech API 테스트 준비됨");
+      };
+    </script>
+  </body>
+</html>
