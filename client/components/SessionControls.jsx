@@ -34,7 +34,7 @@ function SessionActive({ stopSession, sendTextMessage }) {
   }
 
   return (
-    <div className="flex items-center justify-center w-full h-full gap-4">
+    <div className="flex items-center justify-center w-full h-full gap-2 md:gap-4">
       <input
         onKeyDown={(e) => {
           if (e.key === "Enter" && message.trim()) {
@@ -43,7 +43,7 @@ function SessionActive({ stopSession, sendTextMessage }) {
         }}
         type="text"
         placeholder="send a text message..."
-        className="border border-gray-200 rounded-full p-4 flex-1"
+        className="border border-gray-200 rounded-full p-3 md:p-4 flex-1 text-sm md:text-base"
         value={message}
         onChange={(e) => setMessage(e.target.value)}
       />
@@ -54,12 +54,18 @@ function SessionActive({ stopSession, sendTextMessage }) {
           }
         }}
         icon={<MessageSquare height={16} />}
-        className="bg-blue-400"
+        className="bg-blue-400 px-3 md:px-4 text-sm md:text-base"
       >
-        send text
+        <span className="hidden sm:inline">send text</span>
+        <span className="sm:hidden">send</span>
       </Button>
-      <Button onClick={stopSession} icon={<CloudOff height={16} />}>
-        disconnect
+      <Button
+        onClick={stopSession}
+        icon={<CloudOff height={16} />}
+        className="px-3 md:px-4 text-sm md:text-base"
+      >
+        <span className="hidden sm:inline">disconnect</span>
+        <span className="sm:hidden">end</span>
       </Button>
     </div>
   );
