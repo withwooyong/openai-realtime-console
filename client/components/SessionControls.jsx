@@ -54,7 +54,7 @@ function SessionActive({ stopSession, sendTextMessage }) {
           }
         }}
         icon={<MessageSquare height={16} />}
-        className="bg-blue-400 px-3 md:px-4 text-sm md:text-base"
+        className="bg-blue-400 !py-3 md:!py-4 !px-3 md:!px-4 text-sm md:text-base"
       >
         <span className="hidden sm:inline">send text</span>
         <span className="sm:hidden">send</span>
@@ -62,7 +62,7 @@ function SessionActive({ stopSession, sendTextMessage }) {
       <Button
         onClick={stopSession}
         icon={<CloudOff height={16} />}
-        className="px-3 md:px-4 text-sm md:text-base"
+        className="!py-3 md:!py-4 !px-3 md:!px-4 text-sm md:text-base"
       >
         <span className="hidden sm:inline">disconnect</span>
         <span className="sm:hidden">end</span>
