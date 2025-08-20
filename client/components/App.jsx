@@ -478,7 +478,7 @@ export default function App() {
         <div className="flex items-center justify-between w-full m-4 pb-2 border-0 border-b border-solid border-gray-200">
           <div className="flex items-center gap-4">
             <img style={{ width: "24px" }} src={logo} />
-            <h1>realtime console</h1>
+            <h1>TED AI Speech</h1>
           </div>
 
           {/* 뷰 모드 전환 버튼 */}
