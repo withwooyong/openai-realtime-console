@@ -5,7 +5,7 @@ import WebSpeechRecognition from "./WebSpeechRecognition";
 export default function ConversationPanel({ events, isSessionActive }) {
   const [messages, setMessages] = useState([]);
   const [webSpeechEnabled, setWebSpeechEnabled] = useState(false);
-  const [webSpeechLanguage, setWebSpeechLanguage] = useState("ko-KR");
+  const [webSpeechLanguage, setWebSpeechLanguage] = useState("auto");
   const [webSpeechTranscripts, setWebSpeechTranscripts] = useState([]);
   const [audioTranscriptions, setAudioTranscriptions] = useState(new Map()); // item_id -> transcript 매핑
   const scrollRef = useRef(null);
