@@ -162,14 +162,27 @@ export default function App() {
         headers: {
           "Content-Type": "application/json",
         },
+        // TODO: Ted 추후 옵션값들 서버에서 모두 처리할 예정
         body: JSON.stringify({
           model: "gpt-4o-realtime-preview-2025-06-03",
           modalities: ["audio", "text"],
-          instructions: "You are a friendly assistant.",
+          instructions:
+            "Your name is Jonathan. You are an English teacher from New York who teaches English conversation to Koreans learning English conversation. Please do not speak any languages other than Korean and English. If you determine that the conversation is unrelated to English learning, please guide the conversation so that it continues to be a conversation for learning English conversation.",
           voice: selectedVoice,
+          input_audio_noise_reduction: { type: "far_field" },
           input_audio_transcription: {
             model: "whisper-1", // 또는 "gpt-4o-transcribe", "gpt-4o-mini-transcribe"
+            prompt: "expect words related to speak in English",
           },
+          turn_detection: {
+            type: "server_vad",
+            threshold: 0.5,
+            prefix_padding_ms: 500,
+            silence_duration_ms: 1000,
+            create_response: true,
+            interrupt_response: true,
+          },
+          tracing: "auto",
         }),
       });
 
