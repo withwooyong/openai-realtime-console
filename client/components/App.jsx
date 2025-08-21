@@ -502,26 +502,54 @@ export default function App() {
           </div>
 
           {/* 뷰 모드 전환 버튼 */}
-          <div className="flex bg-gray-100 rounded-lg p-1">
+          <div className="flex bg-gray-100 rounded-lg p-1 gap-1">
             <button
               onClick={() => handleViewModeChange("console")}
-              className={`px-3 py-1 text-sm rounded-md transition-all ${
+              title="개발자 콘솔 - API 이벤트와 로그를 확인할 수 있습니다"
+              className={`px-2 py-2 md:px-4 text-sm rounded-md transition-all flex items-center gap-2 font-medium ${
                 viewMode === "console"
-                  ? "bg-white text-gray-900 shadow-sm"
-                  : "text-gray-600 hover:text-gray-900"
+                  ? "bg-blue-600 text-white shadow-lg border border-blue-700 md:bg-white md:text-blue-700 md:border-blue-200"
+                  : "text-gray-600 hover:text-gray-900 hover:bg-blue-50"
               }`}
             >
-              Console
+              <svg
+                className="w-5 h-5 md:w-4 md:h-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                />
+              </svg>
+              <span className="hidden md:inline">개발자 콘솔</span>
             </button>
             <button
               onClick={() => handleViewModeChange("conversation")}
-              className={`px-3 py-1 text-sm rounded-md transition-all ${
+              title="대화 모드 - 실시간 음성 대화를 할 수 있습니다"
+              className={`px-2 py-2 md:px-4 text-sm rounded-md transition-all flex items-center gap-2 font-medium ${
                 viewMode === "conversation"
-                  ? "bg-white text-gray-900 shadow-sm"
-                  : "text-gray-600 hover:text-gray-900"
+                  ? "bg-green-600 text-white shadow-lg border border-green-700 md:bg-white md:text-green-700 md:border-green-200"
+                  : "text-gray-600 hover:text-gray-900 hover:bg-green-50"
               }`}
             >
-              Conversation
+              <svg
+                className="w-5 h-5 md:w-4 md:h-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
+                />
+              </svg>
+              <span className="hidden md:inline">대화 모드</span>
             </button>
           </div>
         </div>
